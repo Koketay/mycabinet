@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный Кабинет Бухгалтера | ИП Джумаева А.Е.</title>
+    <title>Личный Кабинет Бухгалтера</title>
     <script src="https://jsdelivr.net"></script>
     <style>
         :root {
@@ -47,7 +47,9 @@
             margin-bottom: 8px;
             color: var(--text-muted);
             font-weight: 500;
+            transition: all 0.2s;
         }
+        .menu-item:hover { color: var(--text-main); background-color: rgba(255,255,255,0.05); }
         .menu-item.active { background-color: var(--bg-card); color: var(--text-main); border-left: 4px solid var(--accent-blue); }
 
         .content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); box-sizing: border-box; }
@@ -65,12 +67,18 @@
         .panel { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
         .panel h3 { margin-top: 0; margin-bottom: 20px; font-size: 18px; }
 
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
         .form-group input, .form-group select { width: 100%; padding: 10px; background-color: var(--bg-main); border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; outline: none; }
 
-        button.btn-submit { background-color: var(--accent-blue); color: #0f172a; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        button.btn-submit { background-color: var(--accent-blue); color: #0f172a; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; }
         button.btn-submit:hover { filter: brightness(1.1); }
+        
+        button.btn-reset { background-color: transparent; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; width: 100%; }
+        button.btn-reset:hover { background-color: rgba(248, 113, 113, 0.1); }
 
         .tax-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
         .tax-row:last-child { border-bottom: none; }
@@ -79,17 +87,17 @@
 <body>
 
     <div class="sidebar">
-        <h2>ИП Джумаева А.Е.</h2>
+        <h2>Личный Кабинет</h2>
         <div class="regime">Режим: Общеустановленный (ОУР)</div>
-        <div class="menu-item active">📊 Мониторинг доходов</div>
-        <div class="menu-item">📄 Декларация (Форма 220.00)</div>
-        <div class="menu-item">🏛️ Налоги за себя (Форма 200.00)</div>
+        <div class="menu-item active" onclick="switchTab('monitoring', this)">📊 Мониторинг доходов</div>
+        <div class="menu-item" onclick="switchTab('declaration', this)">📄 Декларация (Форма 220.00)</div>
+        <div class="menu-item" onclick="switchTab('taxes', this)">🏛️ Налоги за себя (Форма 200.00)</div>
     </div>
 
     <div class="content">
         <div class="header">
             <div>
-                <h1>Учет доходов и расходов ИП</h1>
+                <h1 id="page-title">Учет доходов и расходов ИП</h1>
                 <span style="color: var(--text-muted); font-size: 14px;">Классический налоговый учет чистой прибыли</span>
             </div>
             <div style="text-align: right;">
@@ -98,49 +106,77 @@
             </div>
         </div>
 
-        <!-- Метрики -->
-        <div class="grid-stats">
-            <div class="stat-card green">
-                <div class="stat-title">Общий Доход (Выручка)</div>
-                <div class="stat-value" id="total-revenue">1 193 000 ₸</div>
+        <!-- ВКЛАДКА 1: МОНИТОРИНГ -->
+        <div id="tab-monitoring" class="tab-content active">
+            <div class="grid-stats">
+                <div class="stat-card green">
+                    <div class="stat-title">Общий Доход (Выручка)</div>
+                    <div class="stat-value" id="total-revenue">0 ₸</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-title">Подтвержденные Расходы (Вычеты)</div>
+                    <div class="stat-value" id="total-expenses">0 ₸</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-title">Чистая Прибыль (НОД)</div>
+                    <div class="stat-value" id="net-profit">0 ₸</div>
+                </div>
             </div>
-            <div class="stat-card red">
-                <div class="stat-title">Подтвержденные Расходы (Вычеты)</div>
-                <div class="stat-value" id="total-expenses">619 000 ₸</div>
-            </div>
-            <div class="stat-card blue">
-                <div class="stat-title">Чистая Прибыль (НОД)</div>
-                <div class="stat-value" id="net-profit">574 000 ₸</div>
+
+            <div class="workspace">
+                <div>
+                    <div class="panel">
+                        <h3>➕ Внести первичные итоги (Z-отчет / ЭСФ)</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Сумма полученного дохода</label>
+                                <input type="number" id="input-revenue" placeholder="Внесите сумму продаж">
+                            </div>
+                            <div class="form-group">
+                                <label>Сумма расходов с документами (ЭСФ)</label>
+                                <input type="number" id="input-expenses" placeholder="Внесите сумму затрат">
+                            </div>
+                        </div>
+                        <button class="btn-submit" onclick="addData()">Обновить баланс</button>
+                        <button class="btn-reset" onclick="resetData()">Сбросить и обнулить все данные</button>
+                    </div>
+
+                    <div class="panel">
+                        <h3>📊 Соотношение структуры бюджета</h3>
+                        <canvas id="standardChart" style="max-height: 250px;"></canvas>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="panel">
+                        <h3>🏛️ Текущие ориентиры ОУР</h3>
+                        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                            На общеустановленном режиме итоговый налог ИПН составляет **10%** от чистой прибыли (строка «Чистая прибыль»). Расходы обязательно должны быть подтверждены входящими ЭСФ и актами.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="workspace">
-            <div>
-                <!-- Ввод данных -->
-                <div class="panel">
-                    <h3>➕ Внести первичные итоги (Z-отчет / ЭСФ)</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div class="form-group">
-                            <label>Сумма полученного дохода</label>
-                            <input type="number" id="input-revenue" placeholder="Внесите сумму продаж">
-                        </div>
-                        <div class="form-group">
-                            <label>Сумма расходов с документами (ЭСФ)</label>
-                            <input type="number" id="input-expenses" placeholder="Внесите сумму затрат">
-                        </div>
+        <!-- ВКЛАДКА 2: ДЕКЛАРАЦИЯ 220.00 -->
+        <div id="tab-declaration" class="tab-content">
+            <div class="panel">
+                <h3>📋 Предварительный расчет к Годовому отчету (Форма 220.00)</h3>
+                <div style="margin-top: 15px;">
+                    <div class="tax-row"><span>Совокупный годовой доход (СГД):</span> <strong id="dec-revenue" style="color: var(--accent-green)">0 ₸</strong></div>
+                    <div class="tax-row"><span>Вычеты (Документальные расходы):</span> <strong id="dec-expenses" style="color: var(--accent-red)">0 ₸</strong></div>
+                    <div class="tax-row"><span>Налогооблагаемый доход (Чистая прибыль):</span> <strong id="dec-nod" style="color: var(--text-main)">0 ₸</strong></div>
+                    <div class="tax-row" style="border-top: 2px solid var(--border); margin-top: 15px; padding-top: 15px;">
+                        <span style="font-size: 16px; font-weight: bold;">ИПН к уплате за год (10%):</span> 
+                        <strong id="dec-tax-total" style="color: var(--accent-blue); font-size: 18px;">0 ₸</strong>
                     </div>
-                    <button class="btn-submit" onclick="addData()">Обновить баланс</button>
-                </div>
-
-                <!-- График -->
-                <div class="panel">
-                    <h3>📊 Соотношение структуры бюджета</h3>
-                    <canvas id="standardChart" style="max-height: 250px;"></canvas>
                 </div>
             </div>
+        </div>
 
-            <!-- Расчет фиксированных платежей -->
-            <div>
+        <!-- ВКЛАДКА 3: НАЛОГИ ЗА СЕБЯ -->
+        <div id="tab-taxes" class="tab-content">
+            <div class="workspace" style="grid-template-columns: 1fr 1fr;">
                 <div class="panel">
                     <h3>🏛️ Ежемесячные платежи за себя (2026)</h3>
                     <div class="form-group">
@@ -152,52 +188,3 @@
                         </select>
                     </div>
 
-                    <div style="margin-top: 15px;">
-                        <div class="tax-row"><span>ОПВ (10%)</span> <strong id="val-opv" style="color: var(--accent-blue)">8 500 ₸</strong></div>
-                        <div class="tax-row"><span>ОПВР (1.5%)</span> <strong id="val-opvr" style="color: var(--accent-blue)">1 275 ₸</strong></div>
-                        <div class="tax-row"><span>СО (3.5%)</span> <strong id="val-so" style="color: var(--accent-blue)">2 975 ₸</strong></div>
-                        <div class="tax-row"><span>ВОСМС (Фикс.)</span> <strong id="val-vosms" style="color: var(--accent-blue)">5 950 ₸</strong></div>
-                        <div class="tax-row" style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 8px;">
-                            <span>Соц. Налог к уплате</span> <strong id="val-sn" style="color: var(--accent-green)">3 885 ₸</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        let coreData = { revenue: 1193000, expenses: 619000 };
-
-        const ctx = document.getElementById('standardChart').getContext('2d');
-        let standardChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Расходы', 'Чистая прибыль'],
-                datasets: [{
-                    data: [coreData.expenses, coreData.revenue - coreData.expenses],
-                    backgroundColor: ['#f87171', '#4ade80'],
-                    borderWidth: 0
-                }]
-            },
-            options: { plugins: { legend: { labels: { color: '#94a3b8' } } } }
-        });
-
-        function addData() {
-            let r = parseFloat(document.getElementById('input-revenue').value);
-            let e = parseFloat(document.getElementById('input-expenses').value);
-
-            if (!isNaN(r)) coreData.revenue += r;
-            if (!isNaN(e)) coreData.expenses += e;
-
-            let profit = coreData.revenue - coreData.expenses;
-            document.getElementById('total-revenue').innerText = coreData.revenue.toLocaleString('ru-RU') + ' ₸';
-            document.getElementById('total-expenses').innerText = coreData.expenses.toLocaleString('ru-RU') + ' ₸';
-            document.getElementById('net-profit').innerText = profit.toLocaleString('ru-RU') + ' ₸';
-
-            standardChart.data.datasets[0].data = [coreData.expenses, profit];
-            standardChart.update();
-
-            document.getElementById('input-revenue').value = '';

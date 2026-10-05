@@ -1,190 +1,569 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный Кабинет Бухгалтера</title>
-    <script src="https://jsdelivr.net"></script>
-    <style>
-        :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --border: #334155;
-        }
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
+    <title>Бухгалтерский кабинет KZ</title>
 
-        .sidebar {
-            width: 280px;
-            background-color: #020617;
-            height: 100vh;
-            position: fixed;
-            padding: 25px 20px;
-            box-sizing: border-box;
-            border-right: 1px solid var(--border);
-        }
-
-        .sidebar h2 { font-size: 18px; color: var(--accent-blue); margin-bottom: 5px; }
-        .sidebar .regime { font-size: 12px; color: var(--text-muted); margin-bottom: 30px; }
-
-        .menu-item {
-            padding: 12px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .menu-item:hover { color: var(--text-main); background-color: rgba(255,255,255,0.05); }
-        .menu-item.active { background-color: var(--bg-card); color: var(--text-main); border-left: 4px solid var(--accent-blue); }
-
-        .content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-
-        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background-color: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
-        .stat-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-        .stat-value { font-size: 24px; font-weight: bold; }
-        .stat-card.green { border-top: 4px solid var(--accent-green); }
-        .stat-card.red { border-top: 4px solid var(--accent-red); }
-        .stat-card.blue { border-top: 4px solid var(--accent-blue); }
-
-        .workspace { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        .panel { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
-        .panel h3 { margin-top: 0; margin-bottom: 20px; font-size: 18px; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background-color: var(--bg-main); border: 1px solid var(--border); border-radius: 6px; color: #fff; box-sizing: border-box; outline: none; }
-
-        button.btn-submit { background-color: var(--accent-blue); color: #0f172a; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; }
-        button.btn-submit:hover { filter: brightness(1.1); }
-        
-        button.btn-reset { background-color: transparent; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; width: 100%; }
-        button.btn-reset:hover { background-color: rgba(248, 113, 113, 0.1); }
-
-        .tax-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .tax-row:last-child { border-bottom: none; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <div class="sidebar">
-        <h2>Личный Кабинет</h2>
-        <div class="regime">Режим: Общеустановленный (ОУР)</div>
-        <div class="menu-item active" onclick="switchTab('monitoring', this)">📊 Мониторинг доходов</div>
-        <div class="menu-item" onclick="switchTab('declaration', this)">📄 Декларация (Форма 220.00)</div>
-        <div class="menu-item" onclick="switchTab('taxes', this)">🏛️ Налоги за себя (Форма 200.00)</div>
+<header class="header">
+    <div>
+        <h1>Бухгалтерский кабинет KZ</h1>
+        <p>ИП / ТОО • налоги • зарплата • учёт</p>
     </div>
 
-    <div class="content">
-        <div class="header">
-            <div>
-                <h1 id="page-title">Учет доходов и расходов ИП</h1>
-                <span style="color: var(--text-muted); font-size: 14px;">Классический налоговый учет чистой прибыли</span>
+    <div class="header-year">
+        <span>Расчётный год</span>
+        <strong>2026</strong>
+    </div>
+</header>
+
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <button class="menu-btn active" data-section="dashboard">
+            🏠 Главная
+        </button>
+
+        <button class="menu-btn" data-section="salary">
+            💰 Зарплата
+        </button>
+
+        <button class="menu-btn" data-section="tax">
+            🧮 Налоги
+        </button>
+
+        <button class="menu-btn" data-section="income">
+            📈 Доходы
+        </button>
+
+        <button class="menu-btn" data-section="expenses">
+            📉 Расходы
+        </button>
+
+        <button class="menu-btn" data-section="employees">
+            👥 Сотрудники
+        </button>
+
+        <button class="menu-btn" data-section="settings">
+            ⚙️ Настройки
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="section active">
+
+            <div class="page-title">
+                <h2>Главная</h2>
+                <p>Сводная информация по вашему бизнесу</p>
             </div>
-            <div style="text-align: right;">
-                <span id="current-date" style="font-weight: bold; color: var(--accent-blue);"></span>
-                <div style="font-size: 12px; color: var(--text-muted)">Мангистауская область</div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <span>Доход</span>
+                    <strong id="dashboardIncome">0 ₸</strong>
+                </div>
+
+                <div class="card">
+                    <span>Расходы</span>
+                    <strong id="dashboardExpenses">0 ₸</strong>
+                </div>
+
+                <div class="card">
+                    <span>Налоги</span>
+                    <strong id="dashboardTax">0 ₸</strong>
+                </div>
+
+                <div class="card">
+                    <span>Прибыль</span>
+                    <strong id="dashboardProfit">0 ₸</strong>
+                </div>
+
             </div>
-        </div>
 
-        <!-- ВКЛАДКА 1: МОНИТОРИНГ -->
-        <div id="tab-monitoring" class="tab-content active">
-            <div class="grid-stats">
-                <div class="stat-card green">
-                    <div class="stat-title">Общий Доход (Выручка)</div>
-                    <div class="stat-value" id="total-revenue">0 ₸</div>
-                </div>
-                <div class="stat-card red">
-                    <div class="stat-title">Подтвержденные Расходы (Вычеты)</div>
-                    <div class="stat-value" id="total-expenses">0 ₸</div>
-                </div>
-                <div class="stat-card blue">
-                    <div class="stat-title">Чистая Прибыль (НОД)</div>
-                    <div class="stat-value" id="net-profit">0 ₸</div>
-                </div>
-            </div>
 
-            <div class="workspace">
-                <div>
-                    <div class="panel">
-                        <h3>➕ Внести первичные итоги (Z-отчет / ЭСФ)</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                            <div class="form-group">
-                                <label>Сумма полученного дохода</label>
-                                <input type="number" id="input-revenue" placeholder="Внесите сумму продаж">
-                            </div>
-                            <div class="form-group">
-                                <label>Сумма расходов с документами (ЭСФ)</label>
-                                <input type="number" id="input-expenses" placeholder="Внесите сумму затрат">
-                            </div>
-                        </div>
-                        <button class="btn-submit" onclick="addData()">Обновить баланс</button>
-                        <button class="btn-reset" onclick="resetData()">Сбросить и обнулить все данные</button>
-                    </div>
-
-                    <div class="panel">
-                        <h3>📊 Соотношение структуры бюджета</h3>
-                        <canvas id="standardChart" style="max-height: 250px;"></canvas>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="panel">
-                        <h3>🏛️ Текущие ориентиры ОУР</h3>
-                        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-                            На общеустановленном режиме итоговый налог ИПН составляет **10%** от чистой прибыли (строка «Чистая прибыль»). Расходы обязательно должны быть подтверждены входящими ЭСФ и актами.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ВКЛАДКА 2: ДЕКЛАРАЦИЯ 220.00 -->
-        <div id="tab-declaration" class="tab-content">
             <div class="panel">
-                <h3>📋 Предварительный расчет к Годовому отчету (Форма 220.00)</h3>
-                <div style="margin-top: 15px;">
-                    <div class="tax-row"><span>Совокупный годовой доход (СГД):</span> <strong id="dec-revenue" style="color: var(--accent-green)">0 ₸</strong></div>
-                    <div class="tax-row"><span>Вычеты (Документальные расходы):</span> <strong id="dec-expenses" style="color: var(--accent-red)">0 ₸</strong></div>
-                    <div class="tax-row"><span>Налогооблагаемый доход (Чистая прибыль):</span> <strong id="dec-nod" style="color: var(--text-main)">0 ₸</strong></div>
-                    <div class="tax-row" style="border-top: 2px solid var(--border); margin-top: 15px; padding-top: 15px;">
-                        <span style="font-size: 16px; font-weight: bold;">ИПН к уплате за год (10%):</span> 
-                        <strong id="dec-tax-total" style="color: var(--accent-blue); font-size: 18px;">0 ₸</strong>
+
+                <h3>Моя организация</h3>
+
+                <div class="info-grid">
+
+                    <div>
+                        <span>Тип</span>
+                        <strong id="companyTypeView">ИП</strong>
                     </div>
+
+                    <div>
+                        <span>Режим</span>
+                        <strong id="taxModeView">
+                            Упрощённая декларация
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Ставка</span>
+                        <strong id="taxRateView">4%</strong>
+                    </div>
+
                 </div>
-            </div>
-        </div>
 
-        <!-- ВКЛАДКА 3: НАЛОГИ ЗА СЕБЯ -->
-        <div id="tab-taxes" class="tab-content">
-            <div class="workspace" style="grid-template-columns: 1fr 1fr;">
-                <div class="panel">
-                    <h3>🏛️ Ежемесячные платежи за себя (2026)</h3>
-                    <div class="form-group">
-                        <label>База расчета (Заявляемый доход)</label>
-                        <select id="salary-base" onchange="calcStandardTaxes()">
-                            <option value="85000">1 МЗП (85 000 ₸)</option>
-                            <option value="150000">150 000 ₸</option>
-                            <option value="300000">300 000 ₸</option>
+            </div>
+
+        </section>
+
+
+
+        <!-- SALARY -->
+        <section id="salary" class="section">
+
+            <div class="page-title">
+                <h2>Калькулятор зарплаты</h2>
+                <p>Расчёт зарплаты сотрудника</p>
+            </div>
+
+
+            <div class="calculator">
+
+                <div class="form">
+
+                    <label>
+                        Начисленная зарплата
+                        <input
+                            id="salaryInput"
+                            type="number"
+                            min="0"
+                            value="300000"
+                        >
+                    </label>
+
+
+                    <label>
+                        Применять базовый вычет 30 МРП
+                        <select id="basicDeduction">
+                            <option value="yes">Да</option>
+                            <option value="no">Нет</option>
                         </select>
+                    </label>
+
+
+                    <button id="calculateSalary" class="primary">
+                        Рассчитать зарплату
+                    </button>
+
+                </div>
+
+
+                <div class="salary-result">
+
+                    <h3>Результат</h3>
+
+                    <div class="result-row">
+                        <span>Начислено</span>
+                        <strong id="salaryGross">0 ₸</strong>
                     </div>
 
+                    <div class="result-row">
+                        <span>ОПВ 10%</span>
+                        <strong id="salaryOpv">0 ₸</strong>
+                    </div>
+
+                    <div class="result-row">
+                        <span>ВОСМС 2%</span>
+                        <strong id="salaryVoms">0 ₸</strong>
+                    </div>
+
+                    <div class="result-row">
+                        <span>ИПН</span>
+                        <strong id="salaryIpn">0 ₸</strong>
+                    </div>
+
+                    <hr>
+
+                    <div class="result-row total">
+                        <span>К выплате</span>
+                        <strong id="salaryNet">0 ₸</strong>
+                    </div>
+
+                    <h4>Расход работодателя</h4>
+
+                    <div class="result-row">
+                        <span>ОПВР 3,5%</span>
+                        <strong id="salaryOpvr">0 ₸</strong>
+                    </div>
+
+                    <div class="result-row">
+                        <span>ОСМС 3%</span>
+                        <strong id="salaryOsms">0 ₸</strong>
+                    </div>
+
+                    <div class="result-row">
+                        <span>СО 5%</span>
+                        <strong id="salarySo">0 ₸</strong>
+                    </div>
+
+                    <div class="result-row total">
+                        <span>Всего для работодателя</span>
+                        <strong id="salaryEmployer">0 ₸</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- TAX -->
+        <section id="tax" class="section">
+
+            <div class="page-title">
+                <h2>Калькулятор налогов</h2>
+                <p>Расчёт налоговой нагрузки</p>
+            </div>
+
+
+            <div class="calculator">
+
+                <div class="form">
+
+                    <label>
+                        Тип бизнеса
+
+                        <select id="companyType">
+                            <option value="ip">ИП</option>
+                            <option value="too">ТОО</option>
+                        </select>
+                    </label>
+
+
+                    <label>
+                        Налоговый режим
+
+                        <select id="taxMode">
+
+                            <option value="simplified">
+                                Упрощённая декларация
+                            </option>
+
+                            <option value="general">
+                                ОУР
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <label>
+                        Доход за период
+
+                        <input
+                            id="taxIncome"
+                            type="number"
+                            min="0"
+                            value="1000000"
+                        >
+
+                    </label>
+
+
+                    <button id="calculateTax" class="primary">
+                        Рассчитать налог
+                    </button>
+
+                </div>
+
+
+                <div class="tax-result">
+
+                    <h3>Результат</h3>
+
+                    <div class="result-row">
+                        <span>Доход</span>
+                        <strong id="taxIncomeResult">0 ₸</strong>
+                    </div>
+
+                    <div class="result-row">
+                        <span>Ставка</span>
+                        <strong id="taxRateResult">4%</strong>
+                    </div>
+
+                    <div class="result-row total">
+                        <span>Налог</span>
+                        <strong id="taxResult">0 ₸</strong>
+                    </div>
+
+                    <p class="warning">
+                        Расчёт является ориентировочным и не заменяет
+                        официальную налоговую декларацию.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- INCOME -->
+        <section id="income" class="section">
+
+            <div class="page-title">
+                <h2>Доходы</h2>
+                <p>Учёт поступлений</p>
+            </div>
+
+
+            <div class="panel">
+
+                <div class="form-inline">
+
+                    <input
+                        id="incomeAmount"
+                        type="number"
+                        placeholder="Сумма"
+                    >
+
+                    <input
+                        id="incomeDescription"
+                        type="text"
+                        placeholder="Описание"
+                    >
+
+                    <button
+                        id="addIncome"
+                        class="primary"
+                    >
+                        Добавить
+                    </button>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Описание</th>
+                                <th>Сумма</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="incomeTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- EXPENSES -->
+        <section id="expenses" class="section">
+
+            <div class="page-title">
+                <h2>Расходы</h2>
+                <p>Учёт расходов бизнеса</p>
+            </div>
+
+
+            <div class="panel">
+
+                <div class="form-inline">
+
+                    <input
+                        id="expenseAmount"
+                        type="number"
+                        placeholder="Сумма"
+                    >
+
+                    <input
+                        id="expenseDescription"
+                        type="text"
+                        placeholder="Описание"
+                    >
+
+                    <button
+                        id="addExpense"
+                        class="primary"
+                    >
+                        Добавить
+                    </button>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Описание</th>
+                                <th>Сумма</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="expenseTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- EMPLOYEES -->
+        <section id="employees" class="section">
+
+            <div class="page-title">
+                <h2>Сотрудники</h2>
+                <p>Список работников</p>
+            </div>
+
+
+            <div class="panel">
+
+                <div class="form-inline">
+
+                    <input
+                        id="employeeName"
+                        type="text"
+                        placeholder="ФИО сотрудника"
+                    >
+
+                    <input
+                        id="employeeSalary"
+                        type="number"
+                        placeholder="Оклад"
+                    >
+
+                    <button
+                        id="addEmployee"
+                        class="primary"
+                    >
+                        Добавить
+                    </button>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Сотрудник</th>
+                                <th>Оклад</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="employeeTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SETTINGS -->
+        <section id="settings" class="section">
+
+            <div class="page-title">
+                <h2>Настройки</h2>
+                <p>Параметры расчёта</p>
+            </div>
+
+
+            <div class="panel">
+
+                <label>
+                    МРП 2026
+
+                    <input
+                        id="mrp"
+                        type="number"
+                        value="4325"
+                    >
+
+                </label>
+
+
+                <label>
+                    Ставка упрощённой декларации %
+
+                    <input
+                        id="simplifiedRate"
+                        type="number"
+                        step="0.1"
+                        value="4"
+                    >
+
+                </label>
+
+
+                <button
+                    id="saveSettings"
+                    class="primary"
+                >
+                    Сохранить настройки
+                </button>
+
+                <p class="saved-message" id="settingsMessage"></p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<footer>
+    Бухгалтерский кабинет KZ • Личные расчёты
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
+```
